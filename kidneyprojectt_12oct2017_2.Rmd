@@ -1,0 +1,431 @@
+---
+title: "Blood loss prediction during percutaneous nephrolithotomy of kidney stones"
+author : "varsha Andrew Priyanka"
+
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r, echo=TRUE}
+#Let's load in our data and create a dataframe and take a look
+getwd()
+mlb <- data.frame(read.csv("Blood_transfusion.csv", header = TRUE))
+
+str(mlb)
+head(mlb)
+getwd()
+```
+
+```{r, echo=TRUE}
+
+
+#Start with individual variables ofAge , stone burden and number of stones total blood loss stone burden.
+head(mlb$Age..years.)
+hist(mlb$Age..years., col = ('blue'))
+hist(mlb$Stone.Burden..mm2. ,col=('red'))
+hist(mlb$Number.of.Stones , col =('green'))
+hist(mlb$Total.Blood.Loss..ml., col = ('brown'))
+hist(mlb$Body.Mass.index, col= ('pink'))
+hist(mlb$Baseline.Serum.Creatinine..mg.dl.,col = ('orange'))
+shapiro.test(mlb$Age..years.) # test for normality
+shapiro.test(mlb$Stone.Burden..mm2.)
+shapiro.test(mlb$Number.of.Stones)
+shapiro.test(mlb$Total.Blood.Loss..ml.)
+shapiro.test(mlb$Body.Mass.index)
+shapiro.test(mlb$Baseline.Serum.Creatinine..mg.dl.)
+boxplot(mlb$Age..years., col = c('yellow'))
+qqnorm(mlb$Age..years.) 
+qqline(mlb$Age..years.)
+boxplot(mlb$Stone.Burden..mm2., col = c('green'))
+qqnorm(mlb$Stone.Burden..mm2.) 
+qqline(mlb$Stone.Burden..mm2.)
+
+boxplot(mlb$Number.of.Stones , col = c('violet'))
+qqnorm(mlb$Number.of.Stones)
+qqline(mlb$Number.of.Stones)
+
+boxplot(mlb$Total.Blood.Loss..ml. , col = c('purple'))
+qqnorm(mlb$Total.Blood.Loss..ml.)
+qqline(mlb$Total.Blood.Loss..ml.)
+
+boxplot(mlb$Body.Mass.index, col = c('orange'))
+qqnorm(mlb$Body.Mass.index)
+qqline(mlb$Body.Mass.index)
+
+boxplot(mlb$Baseline.Serum.Creatinine..mg.dl., col=c('red'))
+qqnorm(mlb$Baseline.Serum.Creatinine..mg.dl.)
+qqline(mlb$Baseline.Serum.Creatinine..mg.dl.)
+
+mean.bloodunit <- mean(mlb$Amount.of.Blood.Unit.Cross.matched..ml.)
+sd.bloodunit <- sd(mlb$Amount.of.Blood.Unit.Cross.matched..ml.)
+mean.bloodunit
+sd.bloodunit
+
+sd.stone <- sd(mlb$Stone.Burden..mm2.)
+mean.stone <- mean(mlb$Stone.Burden..mm2.)
+sd.age <- sd(mlb$Age..years., na.rm = TRUE)
+mean.age <- mean(mlb$Age..years., na.rm = TRUE)
+mean.hematocrit <- mean(mlb$Baseline.Hematocrit....)
+sd.hematocrit <- sd(mlb$Baseline.Hematocrit....)
+mean.bloodloss <- mean(mlb$Total.Blood.Loss..ml.)
+sd.bloodloss <- sd(mlb$Total.Blood.Loss..ml.)
+mean.bmi <- mean(mlb$Body.Mass.index)
+sd.bmi <- sd(mlb$Body.Mass.index)
+mean.baseserum <- mean(mlb$Baseline.Serum.Creatinine..mg.dl.)
+sd.baseserum <- sd(mlb$Baseline.Serum.Creatinine..mg.dl.)
+mean.hemoglobin <- mean(mlb$Baseline.Hemoglobin..g.dl.)
+sd.hemoglobin <- sd(mlb$Baseline.Hemoglobin..g.dl.)
+median(mlb$Total.Blood.Loss..ml.)
+
+mean.stone
+sd.stone
+mean.age
+sd.age
+mean.hematocrit
+sd.hematocrit
+mean.bmi
+sd.bmi
+mean.baseserum
+sd.baseserum
+mean.hemoglobin
+sd.hemoglobin
+summary(mlb$Sex)
+
+```
+
+```{r, echo=TRUE}
+t.test(mlb$Stone.Burden..mm2.)
+t.test(mlb$Body.Mass.index)
+t.test(mlb$Age..years.)
+t.test(mlb$Baseline.Hematocrit....)
+t.test(mlb$Total.Blood.Loss..ml.)
+t.test(mlb$Baseline.Serum.Creatinine..mg.dl.)
+t.test(mlb$Total.Blood.Loss..ml.)
+t.test(mlb$Amount.of.Blood.Unit.Cross.matched..ml.)
+
+str(mlb$Stone.Burden..mm2.)
+```
+
+
+```{r, echo = TRUE}
+z= (mlb$Stone.Burden..mm2. -  mean.stone)/sd.stone
+z1 = z
+100*mean(z1)
+
+
+
+```
+#So we could also do confidence intervals by hand, we need the standard error, mean and n for height, qnorm essential gives us our z-score
+```{r, echo=TRUE}
+print("STONEBURDEN z score")
+qnorm(.975)
+
+n <- length(mlb$Stone.Burden..mm2.)
+n
+std.error <- qnorm(.975)*sd.stone/sqrt(n)
+std.error
+lower.limit <- mean.stone-std.error
+upper.limit <- mean.stone+std.error
+lower.limit
+upper.limit
+
+print("Blood loss z score")
+
+qnorm(.975)
+
+n <- length(mlb$Total.Blood.Loss..ml.)
+n
+std.error <- qnorm(.99)*sd.stone/sqrt(n)
+std.error
+lower.limit <- mean.bloodloss-std.error
+upper.limit <- mean.bloodloss+std.error
+lower.limit
+upper.limit
+
+print("Baseline serum creatinine zscore")
+qnorm(.975)
+
+n <- length(mlb$Baseline.Serum.Creatinine..mg.dl.)
+n
+std.error <- qnorm(.975)*sd.baseserum/sqrt(n)
+std.error
+lower.limit <- mean.baseserum-std.error
+upper.limit <- mean.baseserum+std.error
+lower.limit
+upper.limit
+
+print("Body mass index zscore")
+qnorm(.99)
+
+n <- length(mlb$Body.Mass.index)
+n
+std.error <- qnorm(.99)*sd.bmi/sqrt(n)
+std.error
+lower.limit <- mean.bmi-std.error
+upper.limit <- mean.bmi+std.error
+lower.limit
+upper.limit
+
+qnorm(.97)
+n <- length(mlb$Amount.of.Blood.Unit.Cross.matched..ml.)
+n
+std.error = qnorm(0.97)*sd.bloodunit/sqrt(n)
+std.error
+lower.limit <- mean.bloodunit-std.error
+upper.limit <- mean.bloodunit+std.error
+lower.limit
+upper.limit
+
+
+mean.transfuse <- mean(mlb$Amount.of.Blood.Transfused.peri.operative..ml.)
+sd.transfuse <- sd(mlb$Amount.of.Blood.Transfused.peri.operative..ml.)
+mean.transfuse
+sd.transfuse
+
+qnorm(.97)
+n <- length(mlb$Amount.of.Blood.Transfused.peri.operative..ml.)
+n
+std.error <- qnorm(0.97)*sd.transfuse/sqrt(n)
+std.error
+lower.limit <- mean.transfuse-std.error
+upper.limit <- mean.transfuse+std.error
+lower.limit
+upper.limit
+
+```
+
+
+# Predicting the corelation between hematrocrit level and the amount of blood transfused
+```{r, echo=TRUE, eval=FALSE}
+cor(mlb$Age..years., mlb$Body.Mass.index, use = "complete")
+cor(mlb$Body.Mass.index, mlb$Stone.Burden..mm2., use = "complete")
+cor(mlb$Total.Blood.Loss..ml., mlb$Stone.Burden..mm2.*mlb$Number.of.Stones,use = "complete")
+cor(mlb$Amount.of.Blood.Unit.Cross.matched..ml.,mlb$Stone.Burden..mm2.*mlb$Number.of.Stones, use="complete")
+cor(mlb$Baseline.Hematocrit...., mlb$Amount.of.Blood.Unit.Cross.matched..ml., use="complete")
+cor(mlb$RBC..million.cells..l.,mlb$Amount.of.Blood.Unit.Cross.matched..ml.)
+cor(mlb$Baseline.Hemoglobin..g.dl. ,mlb$Amount.of.Blood.Transfused.peri.operative..ml., use="complete", method = "pearson")
+cor(mlb$Baseline.Hemoglobin..g.dl.,mlb$Total.Blood.Loss..ml.)
+#You can also specify which test to use
+cor(mlb$RBC..million.cells..l.,mlb$Age..years., use = "complete", method="spearman")
+cor(mlb$Baseline.Hematocrit.... , mlb$Amount.of.Blood.Transfused.peri.operative..ml. , use = "complete", method = "spearman")
+cor(mlb$Baseline.Hematocrit....,mlb$Body.Mass.index ,use="complete")
+cor(mlb$Baseline.Hematocrit....,mlb$RBC..million.cells..l., use="complete")
+cor(mlb$Total.Blood.Loss..ml.,mlb$Amount.of.Blood.Transfused.peri.operative..ml.)
+cor(mlb$Amount.of.Blood.Transfused.peri.operative..ml.,mlb$Stone.Burden..mm2.*mlb$Number.of.Stones)
+```
+
+
+
+#Correlation with scatterplots
+```{r, echo=FALSE, eval=FALSE}
+sml <- loess(mlb$Stone.Burden..mm2.*mlb$Number.of.Stones~mlb$Total.Blood.Loss..ml.)
+plot(mlb$Stone.Burden..mm2.*mlb$Number.of.Stones,mlb$Total.Blood.Loss..ml.)
+lines(predict(sml), col='blue', lwd=2)
+scatter.smooth(mlb$Stone.Burden..mm2.*mlb$Number.of.Stones,mlb$Total.Blood.Loss..ml., family = "gaussian")
+
+
+
+mml <- loess(mlb$Baseline.Hematocrit....~mlb$Amount.of.Blood.Transfused.peri.operative..ml.)
+plot(mlb$Baseline.Hematocrit...., mlb$Amount.of.Blood.Transfused.peri.operative..ml.)
+lines(predict(mml) , col = 'red' , lwd = 2)
+scatter.smooth(mlb$Baseline.Hematocrit...., mlb$Amount.of.Blood.Transfused.peri.operative..ml. , family = "gaussian")
+
+
+nml <- loess(mlb$Stone.Burden..mm2.~mlb$Total.Blood.Loss..ml.)
+plot(mlb$Stone.Burden..mm2. , mlb$Total.Blood.Loss..ml.)
+lines(predict(nml) , col ='green' ,lwd =2)
+scatter.smooth(mlb$Stone.Burden..mm2. , mlb$Total.Blood.Loss..ml. , family = "gaussian")
+
+nml <- loess(mlb$Amount.of.Blood.Unit.Cross.matched..ml.~mlb$Total.Blood.Loss..ml.)
+plot(mlb$Amount.of.Blood.Unit.Cross.matched..ml. , mlb$Total.Blood.Loss..ml.)
+lines(predict(nml) , col ='green' ,lwd =2)
+scatter.smooth(mlb$Amount.of.Blood.Unit.Cross.matched..ml. , mlb$Total.Blood.Loss..ml. , family = "gaussian")
+
+nml <- loess(mlb$Amount.of.Blood.Unit.Cross.matched..ml.~ mlb$Stone.Burden..mm2.*mlb$Number.of.Stones)
+plot(mlb$Amount.of.Blood.Unit.Cross.matched..ml.~mlb$Stone.Burden..mm2.*mlb$Number.of.Stones)
+lines(predict(nml) , col ='green' ,lwd =2)
+scatter.smooth(mlb$Amount.of.Blood.Unit.Cross.matched..ml.~ mlb$Stone.Burden..mm2.*mlb$Number.of.Stones, family = "gaussian")
+
+nml <- loess(mlb$Baseline.Serum.Creatinine..mg.dl.~mlb$Stone.Burden..mm2.)
+plot(mlb$Baseline.Serum.Creatinine..mg.dl. , mlb$Stone.Burden..mm2.)
+lines(predict(nml) , col ='green' ,lwd =2)
+scatter.smooth(mlb$Baseline.Serum.Creatinine..mg.dl. , mlb$Stone.Burden..mm2. , family = "gaussian")
+
+nml <- loess(mlb$Age..years.~mlb$RBC..million.cells..l.)
+plot( mlb$Age..years.,mlb$RBC..million.cells..l.)
+lines(predict(nml) , col ='green' ,lwd =2)
+scatter.smooth( mlb$RBC..million.cells..l.~mlb$Age..years.,family = "gaussian")
+
+
+nml <- loess(mlb$Amount.of.Blood.Transfused.peri.operative..ml.~mlb$Baseline.Hemoglobin..g.dl.)
+plot( mlb$Amount.of.Blood.Transfused.peri.operative..ml.~mlb$Baseline.Hemoglobin..g.dl.)
+lines(predict(nml) , col ='green' ,lwd =2)
+scatter.smooth(mlb$Amount.of.Blood.Transfused.peri.operative..ml.~ mlb$Baseline.Hemoglobin..g.dl. , family = "gaussian")
+
+nml <- loess(mlb$Amount.of.Blood.Unit.Cross.matched..ml. ~mlb$Baseline.Hematocrit....)
+plot(mlb$ Amount.of.Blood.Unit.Cross.matched..ml.~mlb$Baseline.Hematocrit....)
+lines(predict(nml) , col ='green' ,lwd =2)
+scatter.smooth( mlb$Amount.of.Blood.Unit.Cross.matched..ml. ~mlb$Baseline.Hematocrit....,family = "gaussian")
+
+nml <- loess(mlb$Total.Blood.Loss..ml.~mlb$Amount.of.Blood.Transfused.peri.operative..ml.)
+  plot(mlb$Total.Blood.Loss..ml.~mlb$Amount.of.Blood.Transfused.peri.operative..ml.)
+  lines(predict(nml), col='red',lwd=2)
+  scatter.smooth(mlb$Amount.of.Blood.Transfused.peri.operative..ml.~mlb$Total.Blood.Loss..ml. , family="gaussian")
+
+
+
+
+```
+
+#Scale subtracts each entry from the mean and then divides it by the standard dev, essentially create a vector of z-scores
+```{r, echo=FALSE, eval=FALSE} 
+
+min(mlb$Stone.Burden..mm2.)
+max(mlb$Stone.Burden..mm2.)
+pchisq( mean.stone, 84, lower.tail=F )
+mlb$Total.Blood.Loss..ml.= -153.379 +(0.229*mlb$Stone.Burden..mm2.) +(0.203*mlb$Baseline.Serum.Creatinine..mg.dl.)
+ 
+scale(mlb$Total.Blood.Loss..ml.)
+
+```
+```{r}
+library(Hmisc) # this package contains the describe function below
+describe(mlb$Stone.Burden..mm2.)
+describe(mlb$Baseline.Serum.Creatinine..mg.dl.)
+
+str(mlb$Baseline.Serum.Creatinine..mg.dl.)
+str(mlb$Stone.Burden..mm2.)
+```
+
+## Including Plots regression analysis
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+
+pnorm(mean.hematocrit)
+
+# Fits a regression model (y~x) y is dependent variable x is independent
+regmodel=lm(mlb$Total.Blood.Loss..ml.~mlb$Stone.Burden..mm2.)
+regmodel2=lm(mlb$Stone.Burden..mm2.~mlb$Baseline.Serum.Creatinine..mg.dl.)
+regmodel1=lm(mlb$Total.Blood.Loss..ml.~mlb$Baseline.Serum.Creatinine..mg.dl.)
+regmodel3=lm(mlb$Amount.of.Blood.Transfused.peri.operative..ml.~mlb$Baseline.Hemoglobin..g.dl.)
+
+#gets fitting from regression model
+summary(regmodel)
+summary(regmodel1)
+summary(regmodel2)  
+
+#Analysis ofvariance from the regression fit
+
+anova(regmodel)
+anova(regmodel1)
+anova(regmodel2)
+anova(regmodel3)
+#get four plots, including normal probability plot, of residuals
+plot(regmodel )
+plot(regmodel1)
+plot(regmodel2)
+plot(regmodel3)
+
+
+#plot anova table
+
+plot(anova(regmodel))
+plot(anova(regmodel1))
+plot(anova(regmodel2))
+#store the fitted values in variable named "fits"
+#CIs for all parameters
+
+fits= regmodel$fitted
+ci = confint(regmodel)
+ci
+predict.lm(regmodel1, interval="confidence")
+
+fits= regmodel1$fitted
+ci = confint(regmodel1)
+ci
+predict.lm(regmodel1, interval="confidence")
+
+fits= regmodel2$fitted
+ci = confint(regmodel2)
+ci
+predict.lm(regmodel2, interval="confidence")
+
+Reduced=regmodel#fit reduced model
+Full=lm(mlb$Total.Blood.Loss..ml.~0+as.factor(mlb$Stone.Burden..mm2.)) #fit full model
+anova(Reduced, Full) #get lack-of-fit test
+plot(anova(Reduced, Full))
+
+```
+
+
+
+``` {r}
+par()
+
+
+library(ggplot2)
+
+plot(mlb$Stone.Burden..mm2. ~ mlb$Total.Blood.Loss..ml., mtcars )
+
+#select the colors that will be used
+library(RColorBrewer)
+#all palette available from RColorBrewer
+display.brewer.all()
+#we will select the first 4 colors in the Set1 palette
+cols<-brewer.pal(n=4,name="Set1")
+#cols contain the names of four different colors
+#create a color vector corresponding to levels in the T1 variable in dat
+X <- mlb$Stone.Burden..mm2.
+Y <- mlb$Total.Blood.Loss..ml.
+#plot
+plot(mlb$Total.Blood.Loss..ml.~mlb$Stone.Burden..mm2. , col=cols,pch=2)
+plot(mlb$Stone.Burden..mm2.~mlb$Baseline.Serum.Creatinine..mg.dl. , col=cols ,pch=2)
+
+
+```
+
+```{r}
+
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+
+```{r, echo=TRUE}
+table(mlb$Sex)
+
+FemalePercentage =(39/85) *100 
+MalePercentage = (46/85)*100
+
+FemalePercentage
+MalePercentage
+
+table(mlb$Post.operative.transfusion)
+post_op_done = (8/85) * 100
+post_op_notdone =(77/85) * 100
+table(mlb$Intra.operative.transfusion)
+intra_op_done =(5/85) * 100
+intra_op_notdone =(80/85) * 100
+post_op_done
+intra_op_done
+
+
+print(paste("percentage intraoperative fusion done" , intra_op_done))
+
+print(paste("percentange postperative fusion done" , post_op_done))
+
+
+```
